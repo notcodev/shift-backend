@@ -1,9 +1,37 @@
 version: '3.8'
 
 services:
+  nginx:
+    image: nginx:alpine
+    restart: always
+    depends_on:
+      - app
+    ports:
+      - 1080:80
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - shift-net
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URL=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017
+      - JWT_SECRET=${APP_JWT_SECRET}
+    networks:
+      - shift-net
   mongo:
     image: mongo:latest
-    env_file:
-      - .env
-    ports:
-      - 27017:27017
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
+    networks:
+      - shift-net
+
+networks:
+  shift-net:

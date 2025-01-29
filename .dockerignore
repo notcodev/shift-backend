@@ -1,2 +1,7 @@
-dockerfile
+Dockerfile
 node_modules
+README.md
+.env
+.env.*
+.dockerignore
+.gitignore
